@@ -6,6 +6,7 @@ import com.festibites.merchant.exception.InvalidInputException;
 import com.festibites.merchant.exception.UserNotFoundException;
 import com.festibites.merchant.exception.UserRegistrationException;
 import com.festibites.merchant.model.User;
+import com.festibites.merchant.model.userrole.UserRole;
 import com.festibites.merchant.repository.UserRepository;
 import com.festibites.merchant.util.StringValidator;
 
@@ -13,11 +14,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService{
 
 	@Autowired
 	private UserRepository userRepository;
@@ -50,6 +56,12 @@ public class UserService {
 
 		// Encrypt the user's password
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		
+		user.setRole(UserRole.USER);
+		user.setAccountNonExpired(true);
+		user.setAccountNonLocked(true);
+		user.setCredentialsNonExpired(true);
+		user.setEnabled(true);
 
 		// Save the user to the database
 		User newUser = userRepository.save(user);
@@ -112,6 +124,9 @@ public class UserService {
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw new InvalidCredentialsException("Invalid password for user " + email);
 		}
+		
+		 // Store user details in the security context
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
 
 		return user;
 	}
@@ -122,12 +137,20 @@ public class UserService {
 
 		userRepository.delete(existingUser);
 	}
+	
 	private boolean emailExists(String email) {
 		return userRepository.findByEmail(email).isPresent();
 	}
 
 	private boolean phoneNumberExists(String phoneNumber) {
 		return userRepository.findByPhoneNumber(phoneNumber).isPresent();
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Optional<User> user = userRepository.findByEmail(username);
+		user.orElseThrow(() -> new UsernameNotFoundException("Username not found: " + username));
+		return user.map(User::new).get();
 	}
 
 }

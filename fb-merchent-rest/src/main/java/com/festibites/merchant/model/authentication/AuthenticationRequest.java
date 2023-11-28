@@ -1,13 +1,14 @@
-package com.festibites.merchant.model;
+package com.festibites.merchant.model.authentication;
 
-public class LoginRequest {
+public class AuthenticationRequest 
+{
 
     private String email;
     private String password;
 
-    public LoginRequest() {}
+    public AuthenticationRequest() {}
 
-    public LoginRequest(String email, String password) {
+    public AuthenticationRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }
