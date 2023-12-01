@@ -21,10 +21,10 @@ import java.util.Optional;
 public class ShopController {
 
 	@Autowired
-    private ShopService shopService;
+	private ShopService shopService;
       
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
     
 	@Autowired
 	private AuthenticationUtility authenticationUtility;
