@@ -3,6 +3,7 @@ package com.festibites.merchant.util;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
@@ -119,5 +120,10 @@ public class StringValidator
         } catch (NumberParseException e) {
             return false;
         }
+    }
+	
+    public static boolean isPasswordStrong(String password) {
+        return StringUtils.length(password) >= 8; // Check if the password is at least 8 characters long
+        // Additional strength checks can be added here (e.g., contains numbers, uppercase, special characters, etc.)
     }
 }

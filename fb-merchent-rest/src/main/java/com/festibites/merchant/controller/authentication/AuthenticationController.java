@@ -1,6 +1,5 @@
 package com.festibites.merchant.controller.authentication;
 
-import com.festibites.merchant.service.UserService;
 import com.festibites.merchant.util.JwtUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.festibites.merchant.model.authentication.AuthenticationRequest;
 import com.festibites.merchant.model.authentication.AuthenticationResponse;
+import com.festibites.merchant.service.user.UserService;
 
 @RestController
 @CrossOrigin
@@ -25,23 +25,6 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtUtil jwtTokenUtil;
-
-//    @PostMapping("/authenticate")
-//    public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-//    	try {
-//    		User user = userService.authenticateUser(authenticationRequest.getEmail(), authenticationRequest.getPassword());
-//    		UserDTO userDTO = new UserDTO(user);
-//    		return ResponseEntity.ok(userDTO);
-//
-//    	} catch (UserNotFoundException e) {
-//            return ResponseEntity.status(404).body(e.getMessage());
-//        } catch (InvalidCredentialsException e) {
-//            return ResponseEntity.status(401).body(e.getMessage());
-//        } catch (Exception e) {
-//            // General error handling
-//            return ResponseEntity.status(500).body("An error occurred during login");
-//        }
-//    }
     
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest authenticationRequest) throws Exception 

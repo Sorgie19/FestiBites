@@ -1,8 +1,8 @@
 package com.festibites.merchant.controller.user;
 
 import com.festibites.merchant.exception.UserRegistrationException;
-import com.festibites.merchant.model.User;
-import com.festibites.merchant.service.UserService;
+import com.festibites.merchant.model.user.User;
+import com.festibites.merchant.service.user.UserService;
 
 import java.util.List;
 

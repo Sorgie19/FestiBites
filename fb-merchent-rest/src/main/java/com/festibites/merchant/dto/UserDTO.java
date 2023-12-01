@@ -1,6 +1,6 @@
 package com.festibites.merchant.dto;
 
-import com.festibites.merchant.model.User;
+import com.festibites.merchant.model.user.User;
 
 public class UserDTO {
 

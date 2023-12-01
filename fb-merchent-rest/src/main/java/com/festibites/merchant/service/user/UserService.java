@@ -1,21 +1,18 @@
-package com.festibites.merchant.service;
+package com.festibites.merchant.service.user;
 
 import com.festibites.merchant.exception.DuplicateEmailException;
-import com.festibites.merchant.exception.InvalidCredentialsException;
 import com.festibites.merchant.exception.InvalidInputException;
 import com.festibites.merchant.exception.UserNotFoundException;
 import com.festibites.merchant.exception.UserRegistrationException;
-import com.festibites.merchant.model.User;
-import com.festibites.merchant.model.userrole.UserRole;
-import com.festibites.merchant.repository.UserRepository;
+import com.festibites.merchant.model.user.User;
+import com.festibites.merchant.model.user.UserRole;
+import com.festibites.merchant.repository.user.UserRepository;
 import com.festibites.merchant.util.StringValidator;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,6 +33,11 @@ public class UserService implements UserDetailsService{
 		if (!StringValidator.isValidEmail(user.getEmail())) {
 			throw new UserRegistrationException("Invalid email address.");
 		}
+		
+        // Validate password strength
+        if (!StringValidator.isPasswordStrong(user.getPassword())) {
+            throw new UserRegistrationException("Password does not meet strength requirements.");
+        }
 
 		// Check if the name is valid
 		if (!StringValidator.isValidName(user.getFirstName() + " " + user.getLastName())) {
@@ -74,6 +76,17 @@ public class UserService implements UserDetailsService{
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
 				.orElseThrow(() -> new UserNotFoundException("User not found with id " + userId));
+	}
+	
+	public User getUserByEmail(String email) {
+	    return userRepository.findByEmail(email)
+	            .orElseThrow(() -> new UserNotFoundException("User not found with email " + email));
+	}
+	
+	public Long getUserIdByEmail(String email) {
+	    return userRepository.findByEmail(email)
+	            .map(User::getId)
+	            .orElseThrow(() -> new UserNotFoundException("User not found with email " + email));
 	}
 
 	public List<User> getAllUsers() {
@@ -114,21 +127,6 @@ public class UserService implements UserDetailsService{
 		// Add other fields to update as needed
 
 		return userRepository.save(existingUser);
-	}
-
-	public User authenticateUser(String email, String password) {
-		Optional<User> optionalUser = userRepository.findByEmail(email);
-
-		User user = optionalUser.orElseThrow(() -> new UserNotFoundException("User not found with email " + email));
-
-		if (!passwordEncoder.matches(password, user.getPassword())) {
-			throw new InvalidCredentialsException("Invalid password for user " + email);
-		}
-		
-		 // Store user details in the security context
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities()));
-
-		return user;
 	}
 
 	public void deleteUser(Long userId) {

@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.festibites.merchant.service.UserService;
+import com.festibites.merchant.service.user.UserService;
 import com.festibites.merchant.util.JwtUtil;
 
 @Component
@@ -54,9 +54,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
-        filterChain.doFilter(request, response);
-		
-		
+        filterChain.doFilter(request, response);		
 	}
 
 }
